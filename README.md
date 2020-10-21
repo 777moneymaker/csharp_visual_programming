@@ -1,2 +1,2 @@
-# csharp_visual_programming
+# DESCRIPTION
 Projects made for Visual Programming Classes
