@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DB_Overlay {
@@ -26,7 +20,7 @@ namespace DB_Overlay {
                 this.BirthMonthsComboBox.Items.Add(i);
             for (int i = 1920; i <= 2020; i++)
                 this.BirthYearsComboBox.Items.Add(i);
-            
+
             this.loadList();
         }
 
@@ -40,20 +34,21 @@ namespace DB_Overlay {
             string dir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string serializationFile = Path.Combine(dir, "people.bin");
 
-            
+
             try {
                 if (this.person_list.Count == 0)
                     return;
 
                 using (Stream stream = File.Open(serializationFile, FileMode.Create)) {
-                var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                bformatter.Serialize(stream, this.person_list);
+                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                    bformatter.Serialize(stream, this.person_list);
                 }
             } catch {
                 MessageBox.Show("Error occured while saving list!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             MessageBox.Show("File saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
         }
 
         private void loadList() {
@@ -65,7 +60,7 @@ namespace DB_Overlay {
 
                 using (Stream stream = File.Open(serializationFile, FileMode.Open)) {
                     var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    
+
                     this.person_list = (List<Person>)bformatter.Deserialize(stream);
                     if (this.person_list.Count == 0)
                         return;
@@ -77,7 +72,7 @@ namespace DB_Overlay {
                 MessageBox.Show("Error occured while saving list!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            
+
         }
 
         private void setTextOnLabels(Person p) {
@@ -91,7 +86,7 @@ namespace DB_Overlay {
         }
 
         private void clearLabels() {
-            foreach(Control x in this.Controls) {
+            foreach (Control x in this.Controls) {
                 if (x.GetType() == typeof(TextBox) || x.GetType() == typeof(ComboBox))
                     x.ResetText();
             }
@@ -110,31 +105,32 @@ namespace DB_Overlay {
 
             Person p;
             int days = 1, months = 1, years = 190;
-            bool positive_status = int.TryParse(this.BirthDaysComboBox.Text, out days) 
+            bool positive_status = int.TryParse(this.BirthDaysComboBox.Text, out days)
                                     && int.TryParse(this.BirthMonthsComboBox.Text, out months)
                                     && int.TryParse(this.BirthYearsComboBox.Text, out years);
 
             if (!positive_status) {
-                MessageBox.Show("Error occured while creating new Person! Check if you have correct data or if you are in a creation mode.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error occured while creating new Person! Check if you have correct data or if you are in a creation mode.", 
+                    "Error", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error);
                 return;
             }
-                
+
 
             if (this.new_status) {
                 try {
-                    p = new Person(
-                        this.NameTextBox.Text.ToString(),
+                    p = new Person(this.NameTextBox.Text.ToString(),
                         this.LastNameTextBox.Text.ToString(),
                         this.JobComboBox.Text.ToString(),
                         this.SexComboBox.Text.ToString(),
                         days,
                         months,
-                        years
-                        );
+                        years);
                     this.person_list.Add(p);
                     this.person_index++;
                     MessageBox.Show("Saved new person!", "Completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                   
+
                     this.new_status = false;
                     this.StatusLabel.Text = "Status: Editing";
                     this.PrevButton.Enabled = !PrevButton.Enabled;
@@ -142,8 +138,11 @@ namespace DB_Overlay {
                     this.DeleteButton.Enabled = !this.DeleteButton.Enabled;
 
                     return;
-                } catch(Exception ex) {
-                    MessageBox.Show("Error occured while creating new Person! Check if you have correct data or if you are in a creation mode.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } catch (Exception ex) {
+                    MessageBox.Show("Error occured while creating new Person! Check if you have correct data or if you are in a creation mode.", 
+                        "Error", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Error);
                     Console.WriteLine(ex.Message);
                     return;
                 }
@@ -157,17 +156,20 @@ namespace DB_Overlay {
                     p.day_birth = days;
                     p.month_birth = months;
                     p.years_birth = years;
-                    
+
                     MessageBox.Show("Re-saved the information about person!", "Completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.new_status = false;
                     this.StatusLabel.Text = "Status: Editing";
-                    
+
                     return;
                 } catch {
-                    MessageBox.Show("Error occured while creating new Person! Check if you have correct data or if you are in a creation mode.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error occured while creating new Person! Check if you have correct data or if you are in a creation mode.", 
+                        "Error", 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Error);
                     return;
                 }
-            } 
+            }
         }
 
         private void PrevButton_Click(object sender, EventArgs e) {
@@ -182,7 +184,7 @@ namespace DB_Overlay {
             }
         }
         private void NextButton_Click(object sender, EventArgs e) {
-            if(this.person_index == this.person_list.Count - 1 || this.person_list.Count == 0) {
+            if (this.person_index == this.person_list.Count - 1 || this.person_list.Count == 0) {
                 return;
             }
             try {
@@ -190,23 +192,23 @@ namespace DB_Overlay {
             } catch {
                 return;
             }
-            
+
         }
 
         private void NewButton_Click(object sender, EventArgs e) {
             this.new_status = !this.new_status;
             this.StatusLabel.Text = this.new_status ? "Status: Creation" : "Status: Editing";
-            this.PrevButton.Enabled = !PrevButton.Enabled ;
+            this.PrevButton.Enabled = !PrevButton.Enabled;
             this.NextButton.Enabled = !this.NextButton.Enabled;
             this.DeleteButton.Enabled = !this.DeleteButton.Enabled;
         }
 
         private void DeleteButton_Click(object sender, EventArgs e) {
             try {
-                if(this.person_index == 0) {
+                if (this.person_index == 0) {
                     this.person_list.Remove(this.person_list[this.person_index]);
                     this.clearLabels();
-                }else {
+                } else {
                     this.person_list.Remove(this.person_list[this.person_index--]);
                     this.setTextOnLabels(this.person_list[this.person_index]);
                 }
