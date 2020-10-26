@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace DB_Overlay {
@@ -12,20 +13,17 @@ namespace DB_Overlay {
 
         public MainWindow() {
             InitializeComponent();
+            this.FormClosing += new FormClosingEventHandler(this.saveFileButton_Click);
             this.CenterToScreen();
 
             for (int i = 1; i <= 31; i++)
-                this.BirthDaysComboBox.Items.Add(i);
+                this.BirthDaysComboBox.Items.Add(i.ToString());
             for (int i = 1; i <= 12; i++)
-                this.BirthMonthsComboBox.Items.Add(i);
+                this.BirthMonthsComboBox.Items.Add(i.ToString());
             for (int i = 1920; i <= 2020; i++)
-                this.BirthYearsComboBox.Items.Add(i);
+                this.BirthYearsComboBox.Items.Add(i.ToString());
 
             this.loadList();
-        }
-
-        ~MainWindow() {
-            this.saveList();
         }
 
 
@@ -54,6 +52,10 @@ namespace DB_Overlay {
         private void loadList() {
             string dir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string serializationFile = Path.Combine(dir, "people.bin");
+
+            if(!new FileInfo(serializationFile).Exists) {
+                return;
+            }
 
             //deserialize
             try {
@@ -90,15 +92,6 @@ namespace DB_Overlay {
                 if (x.GetType() == typeof(TextBox) || x.GetType() == typeof(ComboBox))
                     x.ResetText();
             }
-            /* 
-            this.NameTextBox.ResetText() ;
-            this.LastNameTextBox.ResetText();
-            this.JobComboBox.ResetText();
-            this.SexComboBox.ResetText();
-            this.BirthDaysComboBox.ResetText(); ;
-            this.BirthMonthsComboBox.ResetText(); ;
-            this.BirthYearsComboBox.ResetText();
-            */
         }
 
         private void SaveButton_Click(object sender, EventArgs e) {
