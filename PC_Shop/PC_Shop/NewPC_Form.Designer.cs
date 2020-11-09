@@ -75,6 +75,7 @@
             // 
             // CPUsComboBox
             // 
+            this.CPUsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CPUsComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CPUsComboBox.FormattingEnabled = true;
             this.CPUsComboBox.Location = new System.Drawing.Point(43, 139);

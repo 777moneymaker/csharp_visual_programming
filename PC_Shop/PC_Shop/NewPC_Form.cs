@@ -103,15 +103,10 @@ namespace PC_Shop {
             }catch(FormatException ex) {
                 TextWriter errorWriter = Console.Error;
                 errorWriter.WriteLine(ex.Message);
-
                 sum = 0;
             }
 
-            if (this.mainWindow.PRICE == 0) {
-                this.mainWindow.PRICE = sum;
-            } else {
-                this.mainWindow.PRICE += sum;
-            }
+            this.mainWindow.PRICE += sum;
 
             if (this.mainWindow.STR_PRICE == "") {
                 this.mainWindow.STR_PRICE = sum.ToString();
@@ -126,9 +121,22 @@ namespace PC_Shop {
                 }
             }
 
-            var selected_r = this.DiskRadiosGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
+            
+            try { 
+                string selected_r = this.DiskRadiosGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
+                this.mainWindow.DISK = this.disks[selected_r];
+            } catch (NullReferenceException) {
+                MessageBox.Show("Disk is not selected!");
+                return;
+            }
+
+            
+            if(this.CPUsComboBox.SelectedItem == null) {
+                MessageBox.Show("CPU is not selected!");
+                return;
+            }
+
             this.mainWindow.CPU = (CPU)this.CPUsComboBox.SelectedItem;
-            this.mainWindow.DISK = this.disks[selected_r];
             this.mainWindow.updatePrice();
             this.Close();
         }

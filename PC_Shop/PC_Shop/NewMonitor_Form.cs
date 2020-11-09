@@ -35,7 +35,12 @@ namespace PC_Shop {
         }
 
         private void MonitorsListBox_SelectedIndexChanged(object sender, EventArgs e) {
-            this.MonitorPriceTextBox.Text = ((Monitor)this.MonitorsListBox.SelectedItem).PRICE.ToString();
+            try {
+                this.MonitorPriceTextBox.Text = ((Monitor)this.MonitorsListBox.SelectedItem).PRICE.ToString();
+            } catch (NullReferenceException) {
+                return;
+            }
+            
             this.sum = ((Monitor)this.MonitorsListBox.SelectedItem).PRICE;
         }
 
@@ -44,11 +49,7 @@ namespace PC_Shop {
         }
 
         private void AcceptMonitorButton_Click(object sender, EventArgs e) {
-            if (this.mainWindow.PRICE == 0) {
-                this.mainWindow.PRICE = sum;
-            } else {
-                this.mainWindow.PRICE += sum;
-            }
+            this.mainWindow.PRICE += sum;
 
             if (this.mainWindow.STR_PRICE == "") {
                 this.mainWindow.STR_PRICE = sum.ToString();
@@ -63,6 +64,10 @@ namespace PC_Shop {
                 }
             }
 
+            if(this.MonitorsListBox.SelectedItem == null) {
+                MessageBox.Show("No monitor selected!");
+                return;
+            }
             this.mainWindow.MONITOR = (Monitor)this.MonitorsListBox.SelectedItem;
             this.mainWindow.updatePrice();
             this.Close();
