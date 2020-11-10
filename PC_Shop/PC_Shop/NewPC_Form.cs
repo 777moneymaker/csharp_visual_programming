@@ -23,7 +23,6 @@ namespace PC_Shop {
             // Whenever some component is check - try to calculater final price.
             this.DiskPriceTextBox.TextChanged += SumPrice_Ready;
             this.CPUPriceTextBox.TextChanged += SumPrice_Ready;
-
             // Add some CPUs at init.
             this.updateCPUS();
             // Hard code disks to dict.
@@ -34,10 +33,8 @@ namespace PC_Shop {
 
         // Updates the cpus in the CPUs comboBox.
         public void updateCPUS() {
-            foreach (var cpu in this.mainWindow.CPUs) {
-                if (!this.CPUsComboBox.Items.Contains(cpu))
-                    this.CPUsComboBox.Items.Add(cpu);
-            }
+            var unAdded = this.mainWindow.CPUs.Where(cpu => !this.CPUsComboBox.Items.Contains(cpu));
+            unAdded.ToList<CPU>().ForEach(cpu => this.CPUsComboBox.Items.Add(cpu));
         }
 
         // Event when final cost changes.

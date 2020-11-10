@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace PC_Shop {
@@ -24,11 +25,8 @@ namespace PC_Shop {
 
         // Add new monitors to list of all monitors.
         public void updateMonitors() {
-            foreach (Monitor m in this.mainWindow.Monitors) {
-                if (!this.MonitorsListBox.Items.Contains(m)) {
-                    this.MonitorsListBox.Items.Add(m);
-                }
-            }
+            var unAdded = this.mainWindow.Monitors.Where(m => !this.MonitorsListBox.Items.Contains(m));
+            unAdded.ToList<Monitor>().ForEach(m => this.MonitorsListBox.Items.Add(m));
         }
         // When Selected Monitor changed.
         private void MonitorsListBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -48,7 +46,7 @@ namespace PC_Shop {
         // Accept selected item on AcceptButton click.
         private void AcceptMonitorButton_Click(object sender, EventArgs e) {
 
-            if (this.MonitorsListBox.SelectedItem == null) {
+            if (this.MonitorsListBox.SelectedItem is null) {
                 MessageBox.Show("No monitor selected!");
                 return;
             }

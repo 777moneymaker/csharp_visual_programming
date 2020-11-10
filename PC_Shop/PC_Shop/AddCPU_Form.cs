@@ -58,13 +58,11 @@ namespace PC_Shop {
                 return;
             }
             var model = this.ModelTextBox.Text;
-            foreach (var cpu in this.mainWindow.CPUs) {
-                if (cpu.Model == model) {
-                    this.mainWindow.CPUs.Remove(cpu);
-                    this.ModelTextBox.AutoCompleteCustomSource.Remove(model);
-                    MessageBox.Show(string.Format("CPU: {0} has been deleted!", model));
-                    return;
-                }
+            foreach (var cpu in this.mainWindow.CPUs.Where<CPU>(c => c.Model == model)) {
+                this.mainWindow.CPUs.Remove(cpu);
+                this.ModelTextBox.AutoCompleteCustomSource.Remove(model);
+                MessageBox.Show(string.Format("CPU: {0} has been deleted!", model));
+                return;
             }
             MessageBox.Show(string.Format("CPU {0} is not present! Can't be deleted!", model));
             return;

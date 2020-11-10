@@ -61,13 +61,11 @@ namespace PC_Shop {
                 return;
             }
             var model = this.ModelTextBox.Text;
-            foreach (var monitor in this.mainWindow.Monitors) {
-                if (monitor.Model == model) {
-                    this.mainWindow.Monitors.Remove(monitor);
-                    this.ModelTextBox.AutoCompleteCustomSource.Remove(model);
-                    MessageBox.Show(string.Format("Monitor: {0} has been deleted!", model));
-                    return;
-                }
+            foreach (var monitor in this.mainWindow.Monitors.Where<Monitor>(m => m.Model == model)) {
+                this.mainWindow.Monitors.Remove(monitor);
+                this.ModelTextBox.AutoCompleteCustomSource.Remove(model);
+                MessageBox.Show(string.Format("Monitor: {0} has been deleted!", model));
+                return;
             }
             MessageBox.Show(string.Format("Monitor {0} is not present! Can't be deleted!", model));
             return;
