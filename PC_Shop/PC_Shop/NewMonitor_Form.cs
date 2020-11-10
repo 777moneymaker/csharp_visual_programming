@@ -17,10 +17,8 @@ namespace PC_Shop {
             InitializeComponent();
             this.mainWindow = main_window;
             this.Monitors = main_window.Monitors;
-
-            foreach (var m in this.Monitors) {
-                this.MonitorsListBox.Items.Add(m);
-            }
+            this.MonitorsListBox.Items.AddRange(this.Monitors.ToArray());
+            
         }
 
         // Add new monitors to list of all monitors.

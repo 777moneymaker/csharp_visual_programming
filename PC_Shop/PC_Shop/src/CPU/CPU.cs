@@ -18,6 +18,5 @@ namespace PC_Shop {
             return this.Model;
         }
 
-
     }
 }
