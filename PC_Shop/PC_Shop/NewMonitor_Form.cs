@@ -1,74 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PC_Shop {
     public partial class NewMonitor_Form : Form {
 
-        MainWindow mainWindow;
-        double sum;
-
-        private List<Monitor> monitor_list;
+        // Ref to base window.
+        private readonly MainWindow mainWindow;
+        // Summed price.
+        public double Sum { get; set; }
+        // Summed monitors.
+        private List<Monitor> Monitors { get; set; }
 
         public NewMonitor_Form(MainWindow main_window) {
             InitializeComponent();
             this.mainWindow = main_window;
-            this.monitor_list = main_window.MONITORS;
+            this.Monitors = main_window.Monitors;
 
-            foreach(var m in this.monitor_list) {
+            foreach (var m in this.Monitors) {
                 this.MonitorsListBox.Items.Add(m);
             }
         }
 
+        // Add new monitors to list of all monitors.
         public void updateMonitors() {
-            foreach(Monitor m in this.mainWindow.MONITORS) {
+            foreach (Monitor m in this.mainWindow.Monitors) {
                 if (!this.MonitorsListBox.Items.Contains(m)) {
                     this.MonitorsListBox.Items.Add(m);
                 }
             }
         }
-
+        // When Selected Monitor changed.
         private void MonitorsListBox_SelectedIndexChanged(object sender, EventArgs e) {
             try {
-                this.MonitorPriceTextBox.Text = ((Monitor)this.MonitorsListBox.SelectedItem).PRICE.ToString();
+                this.MonitorPriceTextBox.Text = ((Monitor)this.MonitorsListBox.SelectedItem).Price.ToString();
             } catch (NullReferenceException) {
                 return;
             }
-            
-            this.sum = ((Monitor)this.MonitorsListBox.SelectedItem).PRICE;
+
+            this.Sum = ((Monitor)this.MonitorsListBox.SelectedItem).Price;
         }
 
         private void CancelMonitorButton_Click(object sender, EventArgs e) {
             this.Close();
         }
 
+        // Accept selected item on AcceptButton click.
         private void AcceptMonitorButton_Click(object sender, EventArgs e) {
-            this.mainWindow.PRICE += sum;
 
-            if (this.mainWindow.STR_PRICE == "") {
-                this.mainWindow.STR_PRICE = sum.ToString();
-            } else {
-                double current_sum = 0;
-                try {
-                    current_sum = double.Parse(this.mainWindow.STR_PRICE);
-                    current_sum += this.sum;
-                    this.mainWindow.STR_PRICE = current_sum.ToString();
-                } catch (FormatException) {
-                    this.mainWindow.STR_PRICE = "0";
-                }
-            }
-
-            if(this.MonitorsListBox.SelectedItem == null) {
+            if (this.MonitorsListBox.SelectedItem == null) {
                 MessageBox.Show("No monitor selected!");
                 return;
             }
-            this.mainWindow.MONITOR = (Monitor)this.MonitorsListBox.SelectedItem;
+
+            this.mainWindow.Price += this.Sum;
+            this.mainWindow.Monitor = (Monitor)this.MonitorsListBox.SelectedItem;
             this.mainWindow.updatePrice();
             this.Close();
         }
