@@ -126,7 +126,7 @@ namespace ImgViewer {
                 for (int i = 0; i < img.Width; i++) {
                     for (int j = 0; j < img.Height; j++) {
                         Color px = img.GetPixel(i, j);
-                        if (!(px.R <= 255 && px.G <= 200 && px.B <= 200)) {
+                        if (!(px.R <= 255 && px.G <= 50 && px.B <= 50)) {
                             Color inv = Color.White;
                             img.SetPixel(i, j, inv);
                            
@@ -149,7 +149,7 @@ namespace ImgViewer {
                 for (int i = 0; i < img.Width; i++) {
                     for (int j = 0; j < img.Height; j++) {
                         Color px = img.GetPixel(i, j);
-                        if(!(px.R >= 50 && px.G >= 50 && px.B <= 255)) {
+                        if(!(px.R <= 50 && px.G <= 50 && px.B <= 255)) {
                             Color inv = Color.White;
                             img.SetPixel(i, j, inv);
                         }

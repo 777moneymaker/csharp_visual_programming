@@ -213,7 +213,7 @@
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(296, 99);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(300, 99);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // RotateButton
@@ -224,7 +224,7 @@
             this.RotateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RotateButton.Location = new System.Drawing.Point(3, 3);
             this.RotateButton.Name = "RotateButton";
-            this.RotateButton.Size = new System.Drawing.Size(290, 93);
+            this.RotateButton.Size = new System.Drawing.Size(294, 93);
             this.RotateButton.TabIndex = 0;
             this.RotateButton.Text = "Rotate: Right";
             this.RotateButton.UseVisualStyleBackColor = true;
