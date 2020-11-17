@@ -9,13 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ImgViewer {
-    public partial class MainWindow : Form {
 
+    enum RotateDirection {
+        Right,
+        Left
+    };
+    /// <summary>
+    /// Full spaghetti code. I don't know why it works.
+    /// </summary>
+    public partial class MainWindow : Form {
         private Bitmap main_img;
         private bool flip90;
         private bool onlyred;
         private bool onlyblue;
-        private bool rightRotate = true;
+        private RotateDirection direction = RotateDirection.Right;
+        private RotateFlipType rotation90 = RotateFlipType.RotateNoneFlipNone;
 
         public MainWindow() {
             InitializeComponent();
@@ -65,53 +73,62 @@ namespace ImgViewer {
         }
 
         private void Invert180CheckBox_CheckedChanged(object sender, EventArgs e) {
-            var img = this.ImgPictureBox.Image;
+            if (this.main_img is null)
+                return;
+            var img = this.ImgPictureBox.Image as Bitmap;
             img?.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            if (!object.ReferenceEquals(img, this.main_img)) {
+                this.main_img?.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            }
             this.ImgPictureBox.Image = img;
         }
 
         private void Invert90CheckBox_CheckedChanged(object sender, EventArgs e) {
-            if (this.rightRotate) {
-                var img = this.ImgPictureBox.Image;
+            if (this.main_img is null)
+                return;
+            var img = this.ImgPictureBox.Image as Bitmap;
+            if (this.direction == RotateDirection.Right) {
                 if (!this.flip90) {
                     img?.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    this.rotation90 = RotateFlipType.Rotate90FlipNone;
                     this.ImgPictureBox.Image = img;
                     this.flip90 = true;
                 } else {
                     img?.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    this.rotation90 = RotateFlipType.Rotate270FlipNone;
                     this.ImgPictureBox.Image = img;
                     this.flip90 = false;
                 }
             } else {
-                var img = this.ImgPictureBox.Image;
                 if (!this.flip90) {
                     img?.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    this.rotation90 = RotateFlipType.Rotate270FlipNone;
                     this.ImgPictureBox.Image = img;
                     this.flip90 = true;
                 } else {
                     img?.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    this.rotation90 = RotateFlipType.Rotate90FlipNone;
                     this.ImgPictureBox.Image = img;
                     this.flip90 = false;
                 }
             }
-            
         }
 
         private void ReflectCheckBox_CheckedChanged(object sender, EventArgs e) {
-            var img = this.ImgPictureBox.Image;
-            img?.RotateFlip(RotateFlipType.RotateNoneFlipX);
-            this.ImgPictureBox.Image = img;
+            if (this.main_img is null)
+                return;
+            this.main_img?.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            this.ImgPictureBox.Image = this.main_img;
         }
 
         private void ReflectColorsCheckBox_CheckedChanged(object sender, EventArgs e) {
-            Bitmap img = this.ImgPictureBox.Image as Bitmap;
+            Bitmap img = this.main_img as Bitmap;
             if (img is null)
                 return;
-
-            for(int i = 0; i < img.Width; i++) {
-                for(int j = 0; j < img.Height; j++) {
+            for (int i = 0; i < img.Width; i++) {
+                for (int j = 0; j < img.Height; j++) {
                     Color col = img.GetPixel(i, j);
-                    Color inv =  Color.FromArgb(255, (255 - col.R), (255 - col.G), (255 - col.B));
+                    Color inv = Color.FromArgb(255, (255 - col.R), (255 - col.G), (255 - col.B));
                     img.SetPixel(i, j, inv);
                 }
             }
@@ -129,13 +146,15 @@ namespace ImgViewer {
                         if (!(px.R <= 255 && px.G <= 50 && px.B <= 50)) {
                             Color inv = Color.White;
                             img.SetPixel(i, j, inv);
-                           
                         }
                     }
                 }
                 this.ImgPictureBox.Image = img;
                 this.onlyred = true;
             } else {
+                if (this.ImgPictureBox.Image is null)
+                    return;
+               this.main_img?.RotateFlip(this.rotation90);
                 this.ImgPictureBox.Image = this.main_img;
                 this.onlyred = false;
             }  
@@ -158,6 +177,9 @@ namespace ImgViewer {
                 this.ImgPictureBox.Image = img;
                 this.onlyblue = true;
             } else {
+                if (this.ImgPictureBox.Image is null)
+                    return;
+                this.main_img?.RotateFlip(this.rotation90);
                 this.ImgPictureBox.Image = this.main_img;
                 this.onlyblue = false;
             }
@@ -172,8 +194,15 @@ namespace ImgViewer {
         }
 
         private void RotateButton_Click(object sender, EventArgs e) {
-            this.rightRotate = !this.rightRotate;
-            this.RotateButton.Text = this.RotateButton.Text == "Rotate: Right" ? "Rotate: Left" : "Rotate: Right";
+            switch (this.direction) {
+                case RotateDirection.Left:
+                    this.direction = RotateDirection.Right;
+                    break;
+                case RotateDirection.Right:
+                    this.direction = RotateDirection.Left;
+                    break;
+            }
+            this.RotateButton.Text = "Rotate: " + this.direction.ToString();
         }
     }
 }
