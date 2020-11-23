@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace StudentsDB {
     /// <summary>
@@ -23,8 +24,21 @@ namespace StudentsDB {
             this.FilteredStudentsDataGrid.ItemsSource = Itemlist;
         }
 
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
+
         private void OkButton_Click(object sender, RoutedEventArgs e) {
             this.Close();
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e) {
+            this.Close();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e) {
+            this.WindowState = WindowState.Minimized;
         }
     }
 }

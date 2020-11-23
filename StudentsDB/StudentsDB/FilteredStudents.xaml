@@ -14,17 +14,47 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         ResizeMode="CanMinimize"
-        Title="FilteredStudents" Height="600" Width="600">
-    <Grid Margin="100 10">
+        Title="FilteredStudents" Height="600" Width="600"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None">
+    <Grid Margin="50 10 50 50">
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*" />
-            <RowDefinition Height="1*" />
+            <RowDefinition Height=".8*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
-        
+
+        <!-- Custom Window Buttons-->
+        <Grid HorizontalAlignment="Right">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="75"/>
+                <ColumnDefinition Width="75"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="ExitButton"
+                    Click="ExitButton_Click"
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Background="{DynamicResource MaterialDesignDarkBackground}">
+                <materialDesign:PackIcon Kind="WindowClose" 
+                                         Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                         Background="{DynamicResource MaterialDesignDarkBackground}"/>
+            </Button>
+            <Button x:Name="MinimizeButton"
+                    Click="MinimizeButton_Click"
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    Background="{DynamicResource MaterialDesignDarkBackground}">
+                <materialDesign:PackIcon Kind="WindowMinimize"
+                                         Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                         Background="{DynamicResource MaterialDesignDarkBackground}"/>
+            </Button>
+        </Grid>
+
         <!-- Binded datagrid -->
         <DataGrid x:Name="FilteredStudentsDataGrid"
                   Margin="10"
-                  Grid.Row="0"
+                  Grid.Row="1"
                   BorderThickness="2"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
@@ -32,12 +62,21 @@
                   SelectionUnit="Cell">
             <DataGrid.Resources>
                 <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
-                    <Setter Property="Background" Value="{DynamicResource MaterialDesignDarkForeground}" />
+                    <Setter Property="Background" Value="{StaticResource MaterialDesignLightForeground}" />
                 </Style>
                 <Style BasedOn="{StaticResource {x:Type DataGrid}}" TargetType="DataGrid">
-                    <Setter Property="Background" Value="{DynamicResource MaterialDesignLightBackground}"/>
-                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesignDarkBackground}"/>
-                    <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignShadowBrush}"/>
+                    <Setter Property="Background" Value="{DynamicResource MaterialDesignDarkBackground}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesignDarkForeground}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignLightSeparatorBackground}"/>
+                    <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource MaterialDesignLightSeparatorBackground}"/>
+                    <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource MaterialDesignLightSeparatorBackground}"/>
+                </Style>
+                <Style TargetType="DataGridRowsPresenter">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#4D4D4D"/>
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
@@ -54,7 +93,7 @@
                                     Header="Semester"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="1" 
+        <Button Grid.Row="2" 
                 Margin="100 0 100 0" 
                 Content="OK"
                 x:Name="OkButton" Click="OkButton_Click"/>

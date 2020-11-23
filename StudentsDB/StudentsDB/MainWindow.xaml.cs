@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Xml.Serialization;
 
 namespace StudentsDB {
@@ -18,6 +19,7 @@ namespace StudentsDB {
             //    Name = "Jan",
             //    Semester = 1
             //});
+
         }
 
         private void NewStudentButton_Click(object sender, RoutedEventArgs e) {
@@ -72,5 +74,19 @@ namespace StudentsDB {
                 }
             } catch (Exception) { }
         }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e) {
+            this.Close();
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e) {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
+
     }
 }
