@@ -37,6 +37,7 @@
             <Button x:Name="ExitButton"
                     Click="ExitButton_Click"
                     Grid.Column="1"
+                    Margin="5"
                     HorizontalAlignment="Stretch"
                     Background="{DynamicResource MaterialDesignDarkBackground}">
                 <materialDesign:PackIcon Kind="WindowClose" 
@@ -47,6 +48,7 @@
             <Button x:Name="MinimizeButton"
                     Click="MinimizeButton_Click"
                     Grid.Column="0"
+                    Margin="5"
                     HorizontalAlignment="Stretch"
                     Background="{DynamicResource MaterialDesignDarkBackground}">
                 <materialDesign:PackIcon Kind="WindowMinimize"

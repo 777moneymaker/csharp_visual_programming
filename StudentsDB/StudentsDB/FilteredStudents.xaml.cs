@@ -13,7 +13,7 @@ namespace StudentsDB {
             InitializeComponent();
             
             var _itemSourceList = new CollectionViewSource() { 
-                Source = App.Students 
+                Source = App.Students
             };
             ICollectionView Itemlist = _itemSourceList.View;
 
@@ -36,7 +36,6 @@ namespace StudentsDB {
         private void ExitButton_Click(object sender, RoutedEventArgs e) {
             this.Close();
         }
-
         private void MinimizeButton_Click(object sender, RoutedEventArgs e) {
             this.WindowState = WindowState.Minimized;
         }

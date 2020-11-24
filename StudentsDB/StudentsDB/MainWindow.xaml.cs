@@ -45,8 +45,6 @@ namespace StudentsDB {
             } else {
                 MessageBox.Show("Problem parsing semester or no student on given semester.");
             }
-
-            
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
@@ -56,11 +54,10 @@ namespace StudentsDB {
                     App.Students = serializer.Deserialize(sw) as ObservableCollection<Student>;
                     this.studentsDataGrid.ItemsSource = App.Students;
                 }
-            }catch (FileNotFoundException) {
+            } catch (FileNotFoundException) {
                 App.Students = new ObservableCollection<Student>();
                 this.studentsDataGrid.ItemsSource = App.Students;
             }
-            
         }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
