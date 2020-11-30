@@ -7,7 +7,10 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Title="MainWindow" Height="450" Width="800" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        Title="MainWindow" Height="450" Width="800" 
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -42,7 +45,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Margin="15" x:Name="LoanButton" Content="Loan" Click="LoanButton_Click"/>
-                    <Button Grid.Column="1" Margin="15" x:Name="SaveButton" Content="Save"/>
+                    <Button Grid.Column="1" Margin="15" x:Name="SaveButton" Content="Save" Click="SaveButton_Click"/>
                 </Grid>
                 <Grid Grid.Row="2" Margin="10">
                     <Grid>
@@ -74,8 +77,8 @@
                           x:Name="PersonDataGrid" 
                           AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Width="*" Header="Name" Binding="{Binding Path=Name}"/>
-                        <DataGridTextColumn Width="*" Header="IDK" Binding="{Binding Path=IDK}"/>
+                        <DataGridTextColumn Width="*" Header="Name" Binding="{Binding First}"/>
+                        <DataGridTextColumn Width="*" Header="IDK" Binding="{Binding Second}"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <!-- Button Grid -->
@@ -85,7 +88,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Margin="15" x:Name="ReturnButton" Content="Return" Click="ReturnButton_Click"/>
-                    <Button Grid.Column="1" Margin="15" x:Name="LoadButton" Content="Load"/>
+                    <Button Grid.Column="1" Margin="15" x:Name="LoadButton" Content="Load" Click="LoadButton_Click"/>
                 </Grid>
                 <Grid Grid.Row="2" Margin="10">
                     <Grid>
