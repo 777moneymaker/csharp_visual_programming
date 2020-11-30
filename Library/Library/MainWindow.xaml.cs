@@ -140,7 +140,7 @@ namespace Library {
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e) {
-            this.SaveData();   
+            this.SaveData();
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e) {

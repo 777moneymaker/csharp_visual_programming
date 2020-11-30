@@ -29,7 +29,7 @@
                 <DataGrid MouseLeftButtonDown="BooksDataGrid_MouseLeftButtonDown" 
                           SelectionUnit="FullRow" 
                           SelectionMode="Extended" 
-                          Grid.Row="0" Margin="5" 
+                          Grid.Row="0" 
                           x:Name="BooksDataGrid" 
                           AutoGenerateColumns="False">
                     <DataGrid.Columns>
@@ -44,8 +44,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Margin="15" x:Name="LoanButton" Content="Loan" Click="LoanButton_Click"/>
-                    <Button Grid.Column="1" Margin="15" x:Name="SaveButton" Content="Save" Click="SaveButton_Click"/>
+                    <Button Background="Green" Foreground="White" Grid.Column="0" Margin="15" x:Name="LoanButton" Content="Loan" Click="LoanButton_Click"/>
+                    <Button Background="DarkRed" Foreground="White" Grid.Column="1" Margin="15" x:Name="SaveButton" Content="Save" Click="SaveButton_Click"/>
                 </Grid>
                 <Grid Grid.Row="2" Margin="10">
                     <Grid>
@@ -73,7 +73,7 @@
                 <DataGrid MouseLeftButtonDown="PersonDataGrid_MouseLeftButtonDown" 
                           SelectionUnit="FullRow" 
                           SelectionMode="Single" 
-                          Grid.Row="0" Margin="5" 
+                          Grid.Row="0" 
                           x:Name="PersonDataGrid" 
                           AutoGenerateColumns="False">
                     <DataGrid.Columns>
@@ -87,8 +87,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Margin="15" x:Name="ReturnButton" Content="Return" Click="ReturnButton_Click"/>
-                    <Button Grid.Column="1" Margin="15" x:Name="LoadButton" Content="Load" Click="LoadButton_Click"/>
+                    <Button Background="Green" Foreground="White"  Grid.Column="0" Margin="15" x:Name="ReturnButton" Content="Return" Click="ReturnButton_Click"/>
+                    <Button Background="DarkRed" Foreground="White" Grid.Column="1" Margin="15" x:Name="LoadButton" Content="Load" Click="LoadButton_Click"/>
                 </Grid>
                 <Grid Grid.Row="2" Margin="10">
                     <Grid>
@@ -103,6 +103,5 @@
                 </Grid>
             </Grid>
         </Grid>
-
     </Grid>
 </Window>
