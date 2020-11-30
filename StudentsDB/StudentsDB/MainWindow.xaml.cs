@@ -14,12 +14,6 @@ namespace StudentsDB {
 
         public MainWindow() {
             InitializeComponent();
-            //this.studentsDataGrid.ItemsSource = App.Students;
-            //App.Students.Add(new Student {
-            //    Name = "Jan",
-            //    Semester = 1
-            //});
-
         }
 
         private void NewStudentButton_Click(object sender, RoutedEventArgs e) {
