@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Library {
     /// <summary>
     /// Interaction logic for PersonWindow.xaml
     /// </summary>
     public partial class PersonWindow : Window {
-        public PersonWindow(List<string> people) {
+        public PersonWindow(Person borrower) {
             InitializeComponent();
-            this.PersonTextBox.Text = string.Join(Environment.NewLine, people);
+            this.PersonTextBox.Text = borrower.ToString();
         }
 
         private void PersonOkButton_Click(object sender, RoutedEventArgs e) {

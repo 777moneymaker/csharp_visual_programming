@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Xml.Serialization;
 
 namespace Library {
     /// <summary>
@@ -14,73 +14,57 @@ namespace Library {
     /// 
     public partial class MainWindow : Window {
 
-        private ObservableCollection<Book> Books { get; set; } = new ObservableCollection<Book> {
-            new Book("Pan Tadeusz", "n1"),
-            new Book("Lalka", "n2"),
-            new Book("Ferdydurke", "n3"),
-            new Book("1984", "n4"),
-            new Book("Ojciec Chrzestny", "n5"),
-            new Book("Metro 2033", "n6"),
-        };
+        private ObservableCollection<Book> Books { get; set; }
+
+        private ObservableCollection<Person> Readers { get; set; }
 
         public MainWindow() {
             InitializeComponent();
             this.BooksDataGrid.ItemsSource = this.Books;
-            this.PersonDataGrid.ItemsSource = Book.People;
+            this.PersonDataGrid.ItemsSource = this.Readers;
         }
 
         private void LoanButton_Click(object sender, RoutedEventArgs e) {
-            Pair<string, string> loaner = this.PersonDataGrid.SelectedItem as Pair<string, string>;
-            if(loaner != null && this.BooksDataGrid.SelectedItems.Count > 0) {
+            Person borrower = this.PersonDataGrid.SelectedItem as Person;
+            if(borrower != null && this.BooksDataGrid.SelectedItems.Count > 0) {
                 foreach (Book book in this.BooksDataGrid.SelectedItems) {
-                    if(book.Loaner is null) {
-                        int loaner_count = this.Books
-                                            .Where(b => b.Loaner != null &&
-                                                  b.Loaner.First == loaner.First)
-                                            .Count();
-                        if(loaner_count < 3) {
-                            book.Loaner = loaner;
-                        } else {
-                            MessageBox.Show("Can't loan more than 3 books");
-                            break;
-                        }
-                    } else if (book.Loaner == loaner) {
-                        MessageBox.Show($"{loaner.First} has already loaned {book.Title}.");
+                    if (book.Borrower is null && borrower.Books.Count < 3) {
+                        borrower.Books.Add(book);
+                        book.Borrower = borrower;
+                    } else if (borrower.Books.Count >= 3) {
+                        MessageBox.Show($"{borrower.Name} can't borrow more than 3 books.");
+                    } else if (object.ReferenceEquals(book.Borrower, borrower)) {
+                        MessageBox.Show($"{borrower.Name} has already borrowed {book.Title}.");
                     } else {
-                        MessageBox.Show($"{book.Title} is loaned by {loaner.First}");
+                        MessageBox.Show($"{book.Title} is borrowed by {book.Borrower}");
                     }
                 }
                 MessageBox.Show("Operation completed.");
             } else {
-                MessageBox.Show("Either loaner or any book is not selected.");
+                MessageBox.Show("Either borrower or any book is not selected.");
             }
         }
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e) {
             if(this.BooksDataGrid.SelectedItems.Count > 0 && this.PersonDataGrid.SelectedItem != null) {
-                MessageBox.Show($"For returning select only 1 person or multpile books.");
+                MessageBox.Show("For returning select only 1 person or multpile books.");
             } else if(this.PersonDataGrid.SelectedItem != null) {
-                Pair<string, string> loaner = this.PersonDataGrid.SelectedItem as Pair<string, string>;
-                List<Book> filtered_books = this.Books
-                                                 .Where(b => b.Loaner != null &&
-                                                        b.Loaner.First == loaner.First)
-                                                 .ToList();
-                if(filtered_books.Count > 0) {
-                    foreach (Book book in filtered_books) {
-                        book.Loaner = null;
-                    }
-                    MessageBox.Show($"Succesfully returned all of {loaner.First} books.");
+                Person borrower = this.PersonDataGrid.SelectedItem as Person;
+                if(borrower.Books.Count > 0) {
+                    borrower.Books.ForEach(book => book.Borrower = null);
+                    borrower.Books.Clear();
+                    MessageBox.Show($"Succesfully returned all of {borrower.Name} books.");
                 }else {
                     MessageBox.Show("This person doesn't have any books.");
                 }
-                
             } else {
                 foreach (Book book in this.BooksDataGrid.SelectedItems) {
-                    if(book.Loaner is null) {
-                        MessageBox.Show($"Can't return book {book.Title} cause it's not on loan");
+                    if(book.Borrower is null) {
+                        MessageBox.Show($"Can't return book {book.Title} cause it's not borrowed.");
                         continue;
                     }
-                    book.Loaner = null;
+                    book.Borrower.Books.Remove(book);
+                    book.Borrower = null;
                 }
                 MessageBox.Show("Operation completed");
             }
@@ -100,42 +84,35 @@ namespace Library {
         }
 
         private void PersonListButton_Click(object sender, RoutedEventArgs e) {
-            string idc = this.BookIDCTextBox.Text?.Trim();
-            Book[] books = this.Books.Where(b => b.IDC == idc)?.ToArray();
-            if(books.Count() == 0) {
-                MessageBox.Show("No book with given idc");
+            string idk = this.BookIDCTextBox.Text?.Trim();
+            Book book = this.Books.FirstOrDefault(b => b.IDK == idk);
+
+            if(book is null) {
+                MessageBox.Show("No book with given idk");
                 return;
             }
-            Book chosen = books[0];
-            if (chosen.Loaner is null) {
-                MessageBox.Show("Given book has no loaners");
+            if (book.Borrower is null) {
+                MessageBox.Show("Given book has no borrower");
                 return;
             }
-            List<string> filtered = Book.People
-                                    .Where(p => p != null && p.First == chosen.Loaner.First)
-                                    .Select(p => p.First)
-                                    .ToList();
-            PersonWindow pw = new PersonWindow(filtered);
+
+            Person borrower = this.Readers.FirstOrDefault(reader => reader.Name == book.Borrower.Name);
+            PersonWindow pw = new PersonWindow(borrower);
             pw.Show();
         }
 
         private void BooksListButton_Click(object sender, RoutedEventArgs e) {
-            string idk = this.PersonIDKTextBox.Text?.Trim();
-            string[] people = Book.People
-                              .Where(p => p != null && p.Second == idk)
-                              .Select(p => p.First)
-                              .ToArray();
-            if (people.Count() == 0) {
-                MessageBox.Show("No person with given idk");
+            string idc = this.PersonIDKTextBox.Text?.Trim();
+            Person borrower = this.Readers.FirstOrDefault(r => r.IDC == idc);
+            if(borrower is null) {
+                MessageBox.Show("No borrower with given idc.");
                 return;
             }
-            string chosen = people[0];
-            List<Book> filtered = this.Books.Where(b => b.Loaner != null && b.Loaner.First == chosen).ToList();
-            if(filtered.Count == 0) {
+            if(borrower.Books.Count == 0) {
                 MessageBox.Show("Given person has no books");
                 return;
             }
-            BooksWindow bw = new BooksWindow(filtered);
+            BooksWindow bw = new BooksWindow(borrower.Books);
             bw.Show();
         }
 
@@ -148,32 +125,49 @@ namespace Library {
         }
 
         private void SaveData() {
-            XmlSerializer book_ser = new XmlSerializer(typeof(ObservableCollection<Book>));
-            using (StreamWriter b_sw = new StreamWriter("book.xml")) {
-                book_ser.Serialize(b_sw, this.Books);
-                MessageBox.Show("Successfully saved!");
+            DataContractSerializer serializer = new DataContractSerializer(typeof(DataSaver));
+            DataSaver saver = new DataSaver(this.Readers.ToList(), this.Books.ToList());
+            using (FileStream fs = File.OpenWrite("data.xml;")) {
+                try {
+                    serializer.WriteObject(fs, saver);
+                    MessageBox.Show("Save completed.");
+                } catch (Exception ex) when (ex is SerializationException || ex is InvalidDataContractException) {
+                    MessageBox.Show("Error during saving process.");
+                }
             }
         }
 
         private void LoadData() {
-            XmlSerializer book_ser = new XmlSerializer(typeof(ObservableCollection<Book>));
-            using (StreamReader b_sr = new StreamReader("book.xml")) {
-                try {
-                    this.Books = book_ser.Deserialize(b_sr) as ObservableCollection<Book>;
+            DataContractSerializer serializer = new DataContractSerializer(typeof(DataSaver));
+            try {
+                using (FileStream fs = File.OpenRead("data.xml;")) {
+                    DataSaver saver = serializer.ReadObject(fs) as DataSaver;
+                    this.Books = new ObservableCollection<Book>(saver.Books);
+                    this.Readers = new ObservableCollection<Person>(saver.Readers);
                     this.BooksDataGrid.ItemsSource = this.Books;
-                    this.PersonDataGrid.ItemsSource = Book.People;
-                    MessageBox.Show("Successfully loaded!");
-                } catch (System.InvalidOperationException) {
-                    this.Books = new ObservableCollection<Book> {
-                        new Book("Pan Tadeusz", "n1"),
-                        new Book("Lalka", "n2"),
-                        new Book("Ferdydurke", "n3"),
-                        new Book("1984", "n4"),
-                        new Book("Ojciec Chrzestny", "n5"),
-                        new Book("Metro 2033", "n6"),
-                    };
-                    MessageBox.Show("Error loading data. Using default...");
+                    this.PersonDataGrid.ItemsSource = this.Readers;
+                    MessageBox.Show("Load completed.");
                 }
+            } catch (Exception) {
+                this.Readers = new ObservableCollection<Person> {
+                    new Person("Kowalski", "1"),
+                    new Person("Lubonski", "2"),
+                    new Person("Koniecpolski", "3"),
+                    new Person("Drejewski", "4"),
+                    new Person("Ostrowski", "5"),
+                };
+                this.Books = new ObservableCollection<Book> {
+                    new Book("Pan Tadeusz", "n1"),
+                    new Book("Lalka", "n2"),
+                    new Book("Ferdydurke", "n3"),
+                    new Book("1984", "n4"),
+                    new Book("Ojciec Chrzestny", "n5"),
+                    new Book("Metro 2033", "n6"),
+                };
+                MessageBox.Show("Error during load process. Using default values...");
+            } finally {
+                this.BooksDataGrid.ItemsSource = this.Books;
+                this.PersonDataGrid.ItemsSource = this.Readers;
             }
         }
 

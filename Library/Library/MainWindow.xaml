@@ -30,11 +30,12 @@
                           SelectionUnit="FullRow" 
                           SelectionMode="Extended" 
                           Grid.Row="0" 
+                          IsReadOnly="True"
                           x:Name="BooksDataGrid" 
                           AutoGenerateColumns="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Width="*" Header="Title" Binding="{Binding Path=Title}"/>
-                        <DataGridTextColumn Width="*" Header="IDC" Binding="{Binding Path=IDC}"/>
+                        <DataGridTextColumn Width="*" Header="IDC" Binding="{Binding Path=IDK}"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 
@@ -74,11 +75,12 @@
                           SelectionUnit="FullRow" 
                           SelectionMode="Single" 
                           Grid.Row="0" 
-                          x:Name="PersonDataGrid" 
+                          x:Name="PersonDataGrid"
+                          IsReadOnly="True"
                           AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Width="*" Header="Name" Binding="{Binding First}"/>
-                        <DataGridTextColumn Width="*" Header="IDK" Binding="{Binding Second}"/>
+                        <DataGridTextColumn Width="*" Header="Name" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Width="*" Header="IDK" Binding="{Binding IDC}"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <!-- Button Grid -->
