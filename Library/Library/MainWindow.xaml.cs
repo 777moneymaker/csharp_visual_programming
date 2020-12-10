@@ -27,11 +27,11 @@ namespace Library {
 
         private async void LoanButton_Click(object sender, RoutedEventArgs e) {
             if(this.BooksDataGrid.SelectedItems.Count > 3 || this.BooksDataGrid.SelectedItems.Count == 0) {
-                MessageBox.Show("Select only between 1 and 3 books.", "Error", MessageBoxButton.OK);
+                MessageBox.Show("Select only between 1 and 3 books.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if(this.PersonDataGrid.SelectedItems.Count == 0) {
-                MessageBox.Show("Select person.", "Error", MessageBoxButton.OK);
+                MessageBox.Show("Select person.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -40,7 +40,7 @@ namespace Library {
                 var readerId = ((Person)this.PersonDataGrid.SelectedItem).IDC;
                 
                 if(booksIds.Count() == 0) {
-                    MessageBox.Show("Unable to borrow books.", "Error", MessageBoxButton.OK);
+                    MessageBox.Show("Unable to borrow books.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -56,7 +56,7 @@ namespace Library {
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e) {
             if(this.PersonDataGrid.SelectedItems.Count == 0) {
-                MessageBox.Show("Select person.", "Error", MessageBoxButton.OK);
+                MessageBox.Show("Select person.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -87,18 +87,18 @@ namespace Library {
                 using(var db = new DataContext()) {
                     var filtered = db.Books.Single(b => b.IDK == idk);
                     if(filtered == null) {
-                        MessageBox.Show("No book with given IDK", "Error", MessageBoxButton.OK);
+                        MessageBox.Show("No book with given IDK", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     if(filtered.Borrower == null) {
-                        MessageBox.Show("Book has no borrower", "Error", MessageBoxButton.OK);
+                        MessageBox.Show("Book has no borrower", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     PersonWindow pw = new PersonWindow(filtered.Borrower);
                     pw.ShowDialog();
                 }
             } else {
-                MessageBox.Show("Error while parsing IDK", "Error", MessageBoxButton.OK);
+                MessageBox.Show("Error while parsing IDK", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -107,14 +107,14 @@ namespace Library {
                 using(var db = new DataContext()) {
                     var filtered = db.Books.Where(b => b.Borrower.IDC == idc);
                     if(filtered.Count() == 0) {
-                        MessageBox.Show("This person has no books or doesn't exist", "Error", MessageBoxButton.OK);
+                        MessageBox.Show("This person has no books or doesn't exist", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     BooksWindow bw = new BooksWindow(filtered.ToList());
                     bw.ShowDialog();
                 }
             } else {
-                MessageBox.Show("Error while parsing IDC", "Error", MessageBoxButton.OK);
+                MessageBox.Show("Error while parsing IDC", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -151,6 +151,12 @@ namespace Library {
             using(var db = new DataContext()) {
                 var reader = e.EditingElement.DataContext as Person;
                 if(reader.IDC == 0) {
+                    string name = (e.EditingElement as TextBox).Text;
+                    if(db.Readers.Any(r => r.Name == name)) {
+                        MessageBox.Show("No two same names allowed!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        LoadData();
+                        return;
+                    }
                     Person p = new Person {
                        Name = (e.EditingElement as TextBox).Text,
                     };
