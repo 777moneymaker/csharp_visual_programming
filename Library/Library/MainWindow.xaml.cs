@@ -45,9 +45,12 @@ namespace Library {
                 }
 
                 var books = db.Books.Where(b => booksIds.Contains(b.IDK));
-                var reader = db.Readers.Single(r => r.IDC == readerId);
+                var reader = db.Readers.SingleAsync(r => r.IDC == readerId);
 
-                await books.ForEachAsync(b => b.Borrower = reader);
+                await books.ForEachAsync(async b => {
+                    if(b.Borrower?.Books.Count < 3 || b.Borrower == null)
+                        b.Borrower = await reader;
+                });
                 db.SaveChanges();
                 MessageBox.Show("Operation successful!", "Succes", MessageBoxButton.OK);
             }
@@ -88,10 +91,12 @@ namespace Library {
                     var filtered = db.Books.Single(b => b.IDK == idk);
                     if(filtered == null) {
                         MessageBox.Show("No book with given IDK", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        BookIDCTextBox.Clear();
                         return;
                     }
                     if(filtered.Borrower == null) {
                         MessageBox.Show("Book has no borrower", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        BookIDCTextBox.Clear();
                         return;
                     }
                     PersonWindow pw = new PersonWindow(filtered.Borrower);
@@ -100,6 +105,7 @@ namespace Library {
             } else {
                 MessageBox.Show("Error while parsing IDK", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            BookIDCTextBox.Clear();
         }
 
         private void BooksListButton_Click(object sender, RoutedEventArgs e) {
@@ -108,6 +114,7 @@ namespace Library {
                     var filtered = db.Books.Where(b => b.Borrower.IDC == idc);
                     if(filtered.Count() == 0) {
                         MessageBox.Show("This person has no books or doesn't exist", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        this.PersonIDKTextBox.Clear();
                         return;
                     }
                     BooksWindow bw = new BooksWindow(filtered.ToList());
@@ -116,6 +123,7 @@ namespace Library {
             } else {
                 MessageBox.Show("Error while parsing IDC", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            this.PersonIDKTextBox.Clear();
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e) {
@@ -130,10 +138,10 @@ namespace Library {
             
         }
 
-        private void LoadData() {
+        private async void LoadData() {
             using(var db = new DataContext()) {
-                this.Books = new ObservableCollection<Book>(db.Books.ToList());
-                this.Readers = new ObservableCollection<Person>(db.Readers.ToList());
+                this.Books = new ObservableCollection<Book>(await db.Books.ToListAsync());
+                this.Readers = new ObservableCollection<Person>(await db.Readers.ToListAsync());
                 this.PersonDataGrid.ItemsSource = this.Readers;
                 this.BooksDataGrid.ItemsSource = this.Books;
             }
@@ -184,6 +192,40 @@ namespace Library {
                 }
                 db.SaveChanges();
                 this.LoadData();
+            }
+        }
+
+        private void PersonDataGrid_KeyDown(object sender, KeyEventArgs e) {
+            if(e.Key == Key.Delete) {
+                using(var db = new DataContext()) {
+                    var readerID = ((Person)((DataGrid)(sender)).SelectedItem).IDC;
+                    var reader = db.Readers.Single(r => r.IDC == readerID);
+                    if(reader.Books.Count > 0) {
+                        MessageBox.Show("Can't delete user if he has borrowed books.", "Error", MessageBoxButton.OK);
+                        e.Handled = true;
+                    } else {
+                        db.Readers.Remove(reader);
+                    }
+                    db.SaveChanges();
+                    this.LoadData();
+                }
+            }
+        }
+
+        private void BooksDataGrid_PreviewKeyDown(object sender, KeyEventArgs e) {
+            if(e.Key == Key.Delete) {
+                using(var db = new DataContext()) {
+                    var bookID = ((Book)((DataGrid)(sender)).SelectedItem).IDK;
+                    var book = db.Books.Single(b => b.IDK == bookID);
+                    if(book.Borrower != null) {
+                        MessageBox.Show("Can't delete book if it's borrowed.", "Error", MessageBoxButton.OK);
+                        e.Handled = true;
+                    } else {
+                        db.Books.Remove(book);
+                    }
+                    db.SaveChanges();
+                    this.LoadData();
+                }
             }
         }
     }
