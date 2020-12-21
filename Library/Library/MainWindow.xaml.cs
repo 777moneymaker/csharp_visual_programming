@@ -5,7 +5,6 @@ using System.Data;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,53 +15,79 @@ namespace Library {
     /// </summary>
     /// 
     public partial class MainWindow : Window {
+        // Books collection used in DataGrid binding.
         private ObservableCollection<Book> Books { get; set; }
+        // Reades collection used in DataGrid binding.
         private ObservableCollection<Person> Readers { get; set; }
 
+        /// <summary>
+        /// Main window constructor. Creates controls and sets "DataDirectory".
+        /// </summary>
         public MainWindow() {
             InitializeComponent();
+            // Gets main projects directory.
             string path = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
+            // Sets "DataDirectory" to main project directory, so the app can work on original DB.
             AppDomain.CurrentDomain.SetData("DataDirectory", path);
         }
 
+        /// <summary>
+        /// Callback for LoanButton_Click. Performs book borrow logic.
+        /// </summary>
+        /// <param name="sender">Clicked buton</param>
+        /// <param name="e">Event args</param>
         private async void LoanButton_Click(object sender, RoutedEventArgs e) {
+            // If no book or too many books selected.
             if(this.BooksDataGrid.SelectedItems.Count > 3 || this.BooksDataGrid.SelectedItems.Count == 0) {
                 MessageBox.Show("Select only between 1 and 3 books.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            // If no person selected.
             if(this.PersonDataGrid.SelectedItems.Count == 0) {
                 MessageBox.Show("Select person.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
+            // Using "new connection".
             using(var db = new DataContext()) {
+                // Get all binded objects from selected rows (type is Book).
+                // Get all id of books, which are not borrower "borrower is null".
                 var booksIds = this.BooksDataGrid.SelectedItems.OfType<Book>().Where(b => b.Borrower == null).Select(b => b.IDK);
                 var readerId = ((Person)this.PersonDataGrid.SelectedItem).IDC;
                 
+                // If ther is no book that can be borrowed.
                 if(booksIds.Count() == 0) {
                     MessageBox.Show("Unable to borrow books.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
+                // Select book from DB. Select only these which ID is in selected IDs.
                 var books = db.Books.Where(b => booksIds.Contains(b.IDK));
-                var reader = db.Readers.SingleAsync(r => r.IDC == readerId);
-
-                await books.ForEachAsync(async b => {
+                // Select reader which id eq selected ID.
+                var reader = db.Readers.Single(r => r.IDC == readerId);
+                // Async perform action on every book.
+                await books.ForEachAsync(b => {
                     if(b.Borrower?.Books.Count < 3 || b.Borrower == null)
-                        b.Borrower = await reader;
+                        b.Borrower = reader;
                 });
+                // Save changes to db.
                 db.SaveChanges();
                 MessageBox.Show("Operation successful!", "Succes", MessageBoxButton.OK);
             }
-
         }
-
+        /// <summary>
+        /// Callback for ReturnButton_Click. Performs book's return logic.
+        /// Books are returned by single person, and single person always returns every book.
+        /// </summary>
+        /// <param name="sender">ReturnButton</param>
+        /// <param name="e">EventArgs</param>
         private void ReturnButton_Click(object sender, RoutedEventArgs e) {
+            // If no person selected.
             if(this.PersonDataGrid.SelectedItems.Count == 0) {
                 MessageBox.Show("Select person.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
+            // Using new connection.
             using(var db = new DataContext()) {
                 var readerId = ((Person)this.PersonDataGrid.SelectedItem).IDC;
                 var reader = db.Readers.Single(r => r.IDC == readerId);
@@ -91,12 +116,12 @@ namespace Library {
                     var filtered = db.Books.Single(b => b.IDK == idk);
                     if(filtered == null) {
                         MessageBox.Show("No book with given IDK", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        BookIDCTextBox.Clear();
+                        this.BookIDCTextBox.Clear();
                         return;
                     }
                     if(filtered.Borrower == null) {
                         MessageBox.Show("Book has no borrower", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        BookIDCTextBox.Clear();
+                        this.BookIDCTextBox.Clear();
                         return;
                     }
                     PersonWindow pw = new PersonWindow(filtered.Borrower);
@@ -105,7 +130,7 @@ namespace Library {
             } else {
                 MessageBox.Show("Error while parsing IDK", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            BookIDCTextBox.Clear();
+            this.BookIDCTextBox.Clear();
         }
 
         private void BooksListButton_Click(object sender, RoutedEventArgs e) {
@@ -126,18 +151,6 @@ namespace Library {
             this.PersonIDKTextBox.Clear();
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e) {
-            this.SaveData();
-        }
-
-        private void LoadButton_Click(object sender, RoutedEventArgs e) {
-            this.LoadData();
-        }
-
-        private void SaveData() {
-            
-        }
-
         private async void LoadData() {
             using(var db = new DataContext()) {
                 this.Books = new ObservableCollection<Book>(await db.Books.ToListAsync());
@@ -145,10 +158,6 @@ namespace Library {
                 this.PersonDataGrid.ItemsSource = this.Readers;
                 this.BooksDataGrid.ItemsSource = this.Books;
             }
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            this.SaveData();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -233,9 +242,7 @@ namespace Library {
     public sealed class DataContext : DbContext {
         public DbSet<Book> Books { get; set; }
         public DbSet<Person> Readers { get; set; }
-
         public DataContext() : base(ConfigurationManager.ConnectionStrings["Library.Properties.Settings.MainConnection"].ConnectionString) { }
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder) {
             modelBuilder.Entity<Book>().HasKey(u => u.IDK);
             modelBuilder.Entity<Book>().Property(u => u.IDK).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);

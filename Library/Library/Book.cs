@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
-
-namespace Library {
+﻿namespace Library {
 
     public class Book {
 

@@ -1,8 +1,6 @@
-﻿namespace Library.Migrations
-{
-    using System;
+﻿namespace Library.Migrations {
     using System.Data.Entity.Migrations;
-    
+
     public partial class InitialCreate : DbMigration
     {
         public override void Up()
