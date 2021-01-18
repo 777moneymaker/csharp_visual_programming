@@ -34,12 +34,10 @@ namespace SequenceClient {
         public SeqClient(string endpointConfigurationName, string remoteAddress) :
                 base(endpointConfigurationName, remoteAddress) { }
 
-        public SeqClient(string endpointConfigurationName,
-            System.ServiceModel.EndpointAddress remoteAddress) :
+        public SeqClient(string endpointConfigurationName, EndpointAddress remoteAddress) :
                 base(endpointConfigurationName, remoteAddress) { }
 
-        public SeqClient(System.ServiceModel.Channels.Binding binding,
-            System.ServiceModel.EndpointAddress remoteAddress) :
+        public SeqClient(System.ServiceModel.Channels.Binding binding, EndpointAddress remoteAddress) :
                 base(binding, remoteAddress) { }
 
         public string Translate(string seq) {
