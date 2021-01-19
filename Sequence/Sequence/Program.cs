@@ -4,6 +4,8 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Text;
+using Bio.Algorithms.Translation;
+using Bio.IO.FastA;
 
 namespace Sequence {
     [ServiceContract]
@@ -13,34 +15,34 @@ namespace Sequence {
     }
 
     public class SequenceService : ISequenceService {
-
         public string Translate(string seq) {
             try {
-                var parser = new Bio.IO.FastA.FastAParser();
-                byte[] byteArray = Encoding.UTF8.GetBytes(seq);
-                MemoryStream stream = new MemoryStream(byteArray);
+                var parser = new FastAParser();
+                var byteArray = Encoding.UTF8.GetBytes(seq);
+                Bio.Sequence result;
+                using (var stream = new MemoryStream(byteArray)) {
+                    result = parser.Parse(stream).First() as Bio.Sequence;
+                }
 
-                Bio.Sequence result = parser.Parse(stream).First() as Bio.Sequence;
-                var transcribed = Bio.Algorithms.Translation.Transcription.Transcribe(result);
-                var translated = Bio.Algorithms.Translation.ProteinTranslation.Translate(transcribed) as Bio.Sequence;
+                var transcribed = Transcription.Transcribe(result);
 
-                return translated.ConvertToString();
-            } catch {
+                return ProteinTranslation.Translate(transcribed) is Bio.Sequence translated ? translated.ConvertToString() : "Couldn't translate to protein.";
+            }
+            catch {
                 return "Invalid operation. Check your sequence. Check your format (must be FASTA).";
             }
-
-
         }
     }
 
-    class Program {
-        static Uri baseAddress = new Uri("http://localhost:8080/seq");
-        static void Main(string[] args) {
-            using (ServiceHost host = new ServiceHost(typeof(SequenceService), baseAddress)) {
+    internal class Program {
+        private static readonly Uri BaseAddress = new Uri("http://localhost:8080/seq");
+
+        private static void Main(string[] args) {
+            using (var host = new ServiceHost(typeof(SequenceService), BaseAddress)) {
                 // Enable metadata publishing.
-                ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
-                smb.HttpGetEnabled = true;
-                smb.MetadataExporter.PolicyVersion = PolicyVersion.Policy15;
+                var smb = new ServiceMetadataBehavior {
+                    HttpGetEnabled = true, MetadataExporter = {PolicyVersion = PolicyVersion.Policy15}
+                };
                 host.Description.Behaviors.Add(smb);
 
                 // Open the ServiceHost to start listening for messages. Since
@@ -49,7 +51,7 @@ namespace Sequence {
                 // by the service.
                 host.Open();
 
-                Console.WriteLine("The service is ready at {0}", baseAddress);
+                Console.WriteLine("The service is ready at {0}", BaseAddress);
                 Console.WriteLine("Press <Enter> to stop the service.");
                 Console.ReadLine();
 

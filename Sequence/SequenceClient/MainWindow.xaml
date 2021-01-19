@@ -3,22 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SequenceClient"
         mc:Ignorable="d"
         Title="SequenceClient" Height="450" Width="400">
     <Grid Margin="30">
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
 
-        <TextBox Margin="10" Background="Azure" x:Name="InputSequenceTextBox" AcceptsReturn="True" TextWrapping="Wrap">
-
-        </TextBox>
+        <TextBox Margin="10" Background="Azure" x:Name="InputSequenceTextBox" AcceptsReturn="True" TextWrapping="Wrap" />
         <Button x:Name="TranslateButton" Grid.Row="1" Margin="70 10" Click="TranslateButton_Click">TRANSLATE</Button>
-        <TextBox Margin="10" Background="Azure" x:Name="OutputSequenceTextBox" Grid.Row="2" TextWrapping="Wrap">
-
-        </TextBox>
+        <TextBox Margin="10" Background="Azure" x:Name="OutputSequenceTextBox" Grid.Row="2" TextWrapping="Wrap" />
     </Grid>
 </Window>
