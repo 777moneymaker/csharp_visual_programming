@@ -76,7 +76,7 @@ namespace LastProject {
         }
 
         private bool CheckInputs() {
-            return Regex.Match(FirstNumTextBox.Text, @"^\d+[,]*\d*$").Success && Regex.Match(SecondNumTextBox.Text, @"^\d+[,]*\d*$").Success;
+            return Regex.Match(FirstNumTextBox.Text, @"^\d+[,]?\d*$").Success && Regex.Match(SecondNumTextBox.Text, @"^\d+[,]?\d*$").Success;
         }
 
         private void tabPage4_Click(object sender, EventArgs e) {
